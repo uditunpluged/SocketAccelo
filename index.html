@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Fun CHat :p</title>
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font: 13px Helvetica, Arial;
+    }
+    
+    form {
+        background: #000;
+        padding: 3px;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+    }
+    
+    form input {
+        border: 0;
+        padding: 10px;
+        width: 90%;
+        margin-right: .5%;
+    }
+    
+    form button {
+        width: 9%;
+        background: rgb(130, 224, 255);
+        border: none;
+        padding: 10px;
+    }
+    
+    #messages {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+    
+    #messages li {
+        padding: 5px 10px;
+    }
+    
+    #messages li:nth-child(odd) {
+        background: #eee;
+    }
+    #square {
+  width: 200px;
+  height: 200px;
+  background: red;
+  position: absolute;
+  /*transition: all 2s ease-in-out;*/
+/*    -webkit-transition: all 2s ease-in-out; 
+*/
+  -webkit-transform : translate(350px,0);
+}
+    </style>
+</head>
+
+<body>
+    <H1>No. Of Users</H1>
+    <!-- <ul id="messages"></ul> -->
+    <!-- <form action="">
+        <input id="m" autocomplete="off" />
+        <button>Send</button>
+    </form> -->
+    <!-- <div id="axis" class="one"> -->
+<div id="square"/>
+<!-- </div> -->
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+    var socket = io();
+    socket.emit('counter', 1);
+    $('form').submit(function() {
+        socket.emit('chat message', $('#m').val());
+        $('#m').val('');
+        return false;
+    });
+    socket.on('chat message', function(msg) {
+        $('#messages').append($('<li>').text(msg));
+    });
+    socket.on('counter', function(msg) {
+        $('H1').text("No. Of Users " + msg);
+    });
+
+    socket.on('data',function(msg){
+      var x="translate("+msg+"px,0)";
+                              console.log(msg.split(",")[0]+"  :  "+msg.split(",")[1]);
+
+      $('#square').css("-webkit-transform" , "translate("+msg.split(",")[1]+"px,0px)");
+    });
+
+    if (window.DeviceMotionEvent == undefined) {
+        //No accelerometer is present. Use buttons. 
+        alert("no accelerometer");
+    } else {
+        alert("accelerometer found");
+        window.addEventListener("devicemotion", accelerometerUpdate, true);
+    }
+
+    function accelerometerUpdate(e) {
+        var aX = event.accelerationIncludingGravity.x*1;
+   var aY = event.accelerationIncludingGravity.y*1;
+   var aZ = event.accelerationIncludingGravity.z*1;
+   //The following two lines are just to calculate a
+   // tilt. Not really needed. 
+  var xPosition = Math.atan2(aY, aZ);
+   var yPosition = Math.atan2(aX, aZ);
+                   socket.emit('data', ""+yPosition*0 + ","+xPosition*250);
+                        console.log(xPosition*100);
+
+    }
+    </script>
+</body>
+
+</html>
